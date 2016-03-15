@@ -1,0 +1,42 @@
+<!doctype html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../web-component-tester/browser.js"></script>
+
+        <!-- Import the element to test -->
+        <link rel="import" href="../elastic-client-input.html">
+    </head>
+    <body>
+        <!-- Use the document as a place to set up your fixtures. -->
+        <test-fixture id="elastic-client-input-fixture">
+            <template>
+            <!-- FIXME add the property bindings -->
+                <elastic-client-input>
+                </elastic-client-input>
+            </template>
+        </test-fixture>
+        <script>
+            suite('<elastic-client-input>', function() {
+
+                var eci;
+
+                setup(function() {
+                    eci = fixture('elastic-client-input-fixture');
+                });
+
+                test('defines the field property', function () {
+                  assert.equal(eci.field, 'my.field');
+                });
+
+                //input triggers query on autobuild=true
+                //input doesnt triffer query on non-autobuild
+                //build call
+            });
+        </script>
+    </body>
+</html>

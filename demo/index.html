@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <link rel="import" href="../elastic-client-input.html">
     </head>
     <body unresolved>
-        <template is="dom-bind">
+        <template is="dom-bind" id="demo">
             <elastic-client-input
                 label="Text Input"
                 field="foo.bar"
@@ -40,13 +40,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <button onclick="callBuild()">OK</button>
 
             <p><span>Input: </span>{{val2}}</p>
-            <p><span>Query: </span>{{ejsQuery2}}</p>
+            <p><span>Query: </span>{{toJSON(ejsQuery2)}}</p>
         </template>
 
         <script>
+            (function(document) {
+                var demo = document.querySelector('#demo');
+
+                demo.toJSON = function(ejs) {
+                    return JSON.stringify(ejs);
+                }
+            })(document);
+
             function callBuild() {
                 document.getElementById('input2').build();
             }
         </script>
+
     </body>
 </html>
