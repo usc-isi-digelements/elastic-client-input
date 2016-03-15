@@ -1,0 +1,105 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="./elasticjs.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+        <elastic-client-input
+            field="field.path"
+            label="My Input"
+            value={{inputValue}}
+            query={{resultingQuery}}>
+        </elastic-client-input>
+
+Example:
+        <elastic-client-input
+            field="field.path"
+            value="{{inputValue}}"
+            query="{{resultingQuery}}"
+            autobuild="false">
+        </elastic-client-input>
+
+@demo demo/index.html
+-->
+
+<dom-module id="elastic-client-input">
+    <template>
+        <paper-input
+            label="{{labelValue}}"
+            value="{{value}}"
+        >
+        </paper-input>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'elastic-client-input',
+
+            properties: {
+                // The field which the resulting elasticjs query should
+                // be targetted against
+                field: {
+                    type: String
+                },
+
+                // The raw input string
+                value: {
+                    type: String,
+                    notify: true
+                },
+
+                // The resulting elasticjs query from this input
+                query: {
+                    type: Object,
+                    readOnly: true,
+                    notify: true
+                },
+
+                // Whether or not to automatically build the query on change of
+                // the value property or to wait for build to be manually called
+                autobuild: {
+                    type: Boolean,
+                    value: false
+                },
+
+                // Specifies the label for the input field. If not specified
+                // the field will be used
+                label: {
+                    type: String,
+                    value: ''
+                },
+
+                // The computed label; derived from the label or the field
+                labelValue: {
+                    type: String,
+                    readOnly: true,
+                    computed: 'resolveLabelValue(field, label)'
+                }
+            },
+
+            observers: [
+                'buildQuery(field, value)'
+            ],
+
+            buildQuery: function(field, value) {
+                if(value !== '' && this.autobuild) {
+                    this.build();
+                }
+            },
+
+            build: function() {
+                if(this.field) {
+                    var query = ejs.MatchQuery(this.field, this.value);
+                    this._setQuery(query);
+                }
+            },
+
+            resolveLabelValue: function(field, label) {
+                return label || field;
+            }
+        });
+    </script>
+</dom-module>
