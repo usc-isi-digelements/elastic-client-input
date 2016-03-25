@@ -30,6 +30,7 @@ Example:
         <paper-input
             label="{{labelValue}}"
             value="{{value}}"
+            on-keydown="checkEnter"
         >
         </paper-input>
     </template>
@@ -77,6 +78,11 @@ Example:
                     type: String,
                     readOnly: true,
                     computed: 'resolveLabelValue(field, label)'
+                },
+
+                buildOnEnter: {
+                    type: Boolean,
+                    value: false
                 }
             },
 
@@ -104,6 +110,14 @@ Example:
             clear: function() {
                 this.value = null;
                 this.build();
+            },
+
+            checkEnter: function(e) {
+                if(e.keyCode === 13) {
+                    if(this.buildOnEnter) {
+                        this.build();
+                    }
+                }
             }
         });
     </script>
