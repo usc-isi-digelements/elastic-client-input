@@ -15,27 +15,96 @@
         <!-- Use the document as a place to set up your fixtures. -->
         <test-fixture id="elastic-client-input-fixture">
             <template>
-            <!-- FIXME add the property bindings -->
-                <elastic-client-input>
+                <elastic-client-input
+                    field="my.field">
                 </elastic-client-input>
             </template>
         </test-fixture>
+        <test-fixture id="elastic-client-input-fixture2">
+            <template>
+                <elastic-client-input
+                    id="eci2"
+                    field="my.field"
+                    label="mylabel"
+                    autobuild="true">
+                </elastic-client-input>
+            </template>
+        </test-fixture>
+        <test-fixture id="elastic-client-input-fixture3">
+            <template>
+                <elastic-client-input
+                    id="eci3"
+                    field="my.field"
+                    build-on-enter="true">
+                </elastic-client-input>
+            </template>
+        </test-fixture>
+
         <script>
             suite('<elastic-client-input>', function() {
 
                 var eci;
+                var eci2;
+                var eci3;
 
                 setup(function() {
                     eci = fixture('elastic-client-input-fixture');
+                    eci2 = fixture('elastic-client-input-fixture2');
+                    eci3 = fixture('elastic-client-input-fixture3');
                 });
 
                 test('defines the field property', function () {
-                  assert.equal(eci.field, 'my.field');
+                    assert.equal(eci.field, 'my.field');
                 });
 
-                //input triggers query on autobuild=true
-                //input doesnt triffer query on non-autobuild
-                //build call
+                test('sets label value to field value if not defined', function() {
+                    assert.equal(eci.labelValue, 'my.field');
+                });
+
+                test('properly sets the label if defined', function() {
+                    assert.equal(eci2.labelValue, 'mylabel')
+                    var label = document.querySelector('#eci2').querySelector(":scope label");
+                    assert.equal(label.textContent, 'mylabel');
+                });
+
+                test('correctly defaults build on enter', function() {
+                    assert.equal(eci.buildOnEnter, false);
+                });
+
+                test('correctly sets build on enter', function() {
+                    assert.equal(eci3.buildOnEnter, true);
+                });
+
+                test('correctly defaults autobuild', function() {
+                    assert.equal(eci.autobuild, false);
+                });
+
+                test('correctly sets autobuild', function() {
+                    assert.equal(eci2.autobuild, true);
+                });
+
+                //FIXME how to test autobuild
+                // test('triggers query build on input if autobuild is set', function() {
+
+                // })
+
+                //FIXME this test is not working
+                // test('triggers query build on enter key if buildOnEnter is set', function() {
+                //     var input = document.querySelector('#eci3').querySelector(":scope paper-input");
+
+                //     input.value = "testval";
+
+                //     expect(eci3.query).not.to.exist;
+
+                //     var evt = new CustomEvent('keyup');
+                //     evt.which = evt.keyCode = 13;
+                //     input.dispatchEvent(evt);
+
+                //     expect(eci3.query).to.exist;
+                //     expect(eci3.query).to.equal(ejs.MatchQuery('my.field', 'testval'));
+                // })
+
+                //FIXME clear changes value and calls build
             });
         </script>
     </body>
