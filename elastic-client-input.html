@@ -12,6 +12,7 @@ Example:
             label="My Input"
             value={{inputValue}}
             query={{resultingQuery}}>
+            autobuild="true"
         </elastic-client-input>
 
 Example:
@@ -19,7 +20,6 @@ Example:
             field="field.path"
             value="{{inputValue}}"
             query="{{resultingQuery}}"
-            autobuild="false">
         </elastic-client-input>
 
 @demo demo/index.html
@@ -99,6 +99,11 @@ Example:
 
             resolveLabelValue: function(field, label) {
                 return label || field;
+            },
+
+            clear: function() {
+                this.value = null;
+                this.build();
             }
         });
     </script>
