@@ -3,7 +3,8 @@
 <link rel="import" href="./elasticjs.html">
 
 <!--
-An element providing a solution to no problem in particular.
+An element which renders an input box and produces an elasticjs query based
+on the input value
 
 Example:
 
@@ -80,6 +81,8 @@ Example:
                     computed: 'resolveLabelValue(field, label)'
                 },
 
+                // Whether the resulting query should be built when the enter
+                // key is pressed
                 buildOnEnter: {
                     type: Boolean,
                     value: false
@@ -96,6 +99,9 @@ Example:
                 }
             },
 
+            /**
+             * Builds the elasticjs query based on the input field value
+            */
             build: function() {
                 if(this.field) {
                     var query = ejs.MatchQuery(this.field, this.value);
@@ -112,6 +118,9 @@ Example:
                 this.build();
             },
 
+            /**
+             * Checks to see if the enter key was pressed
+            */
             checkEnter: function(e) {
                 if(e.keyCode === 13) {
                     if(this.buildOnEnter) {
