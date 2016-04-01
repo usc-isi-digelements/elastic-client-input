@@ -83,28 +83,49 @@
                     assert.equal(eci2.autobuild, true);
                 });
 
-                //FIXME how to test autobuild
-                // test('triggers query build on input if autobuild is set', function() {
+                test('triggers query build on input if autobuild is set', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = "foo";
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'foo').toJSON());
+                });
 
-                // })
+                test('triggers query build on enter key if buildOnEnter is set', function(done) {
+                    var input = document.querySelector('#eci3').querySelector(":scope paper-input");
 
-                //FIXME this test is not working
-                // test('triggers query build on enter key if buildOnEnter is set', function() {
-                //     var input = document.querySelector('#eci3').querySelector(":scope paper-input");
+                    input.value = "testval";
 
-                //     input.value = "testval";
+                    expect(eci3.query).not.to.exist;
 
-                //     expect(eci3.query).not.to.exist;
+                    var evt = new CustomEvent('keydown');
+                    evt.which = evt.keyCode = 13;
+                    input.dispatchEvent(evt);
 
-                //     var evt = new CustomEvent('keyup');
-                //     evt.which = evt.keyCode = 13;
-                //     input.dispatchEvent(evt);
+                    expect(eci3.query).to.exist;
+                    expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'testval').toJSON());
+                    done();
+                });
 
-                //     expect(eci3.query).to.exist;
-                //     expect(eci3.query).to.equal(ejs.MatchQuery('my.field', 'testval'));
-                // })
+                test('clears query and input on clear call', function(done) {
+                    var input = document.querySelector('#eci3').querySelector(":scope paper-input");
 
-                //FIXME clear changes value and calls build
+                    input.value = "testval";
+
+                    expect(eci3.query).not.to.exist;
+
+                    var evt = new CustomEvent('keydown');
+                    evt.which = evt.keyCode = 13;
+                    input.dispatchEvent(evt);
+
+                    expect(eci3.query).to.exist;
+                    expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'testval').toJSON());
+
+                    eci3.clear();
+
+                    expect(input.value).to.not.exist;
+                    expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', null).toJSON());
+                    done()
+                });
             });
         </script>
     </body>
