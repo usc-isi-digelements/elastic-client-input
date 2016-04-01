@@ -62,7 +62,7 @@
                 });
 
                 test('properly sets the label if defined', function() {
-                    assert.equal(eci2.labelValue, 'mylabel')
+                    assert.equal(eci2.labelValue, 'mylabel');
                     var label = document.querySelector('#eci2').querySelector(":scope label");
                     assert.equal(label.textContent, 'mylabel');
                 });
@@ -124,7 +124,7 @@
 
                     expect(input.value).to.not.exist;
                     expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', null).toJSON());
-                    done()
+                    done();
                 });
             });
         </script>
