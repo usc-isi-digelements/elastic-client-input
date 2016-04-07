@@ -30,27 +30,16 @@
                 </elastic-client-input>
             </template>
         </test-fixture>
-        <test-fixture id="elastic-client-input-fixture3">
-            <template>
-                <elastic-client-input
-                    id="eci3"
-                    field="my.field"
-                    build-on-enter="true">
-                </elastic-client-input>
-            </template>
-        </test-fixture>
 
         <script>
             suite('<elastic-client-input>', function() {
 
                 var eci;
                 var eci2;
-                var eci3;
 
                 setup(function() {
                     eci = fixture('elastic-client-input-fixture');
                     eci2 = fixture('elastic-client-input-fixture2');
-                    eci3 = fixture('elastic-client-input-fixture3');
                 });
 
                 test('defines the field property', function () {
@@ -67,13 +56,6 @@
                     assert.equal(label.textContent, 'mylabel');
                 });
 
-                test('correctly defaults build on enter', function() {
-                    assert.equal(eci.buildOnEnter, false);
-                });
-
-                test('correctly sets build on enter', function() {
-                    assert.equal(eci3.buildOnEnter, true);
-                });
 
                 test('correctly defaults autobuild', function() {
                     assert.equal(eci.autobuild, false);
@@ -90,42 +72,21 @@
                     expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'foo').toJSON());
                 });
 
-                test('triggers query build on enter key if buildOnEnter is set', function(done) {
-                    var input = document.querySelector('#eci3').querySelector(":scope paper-input");
+                // test clear()
+                test('trigger query build', function(done) {
+                    var input = document.querySelector('#eci2').querySelector(":scope paper-input");
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = "foo";
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'foo').toJSON());
 
-                    input.value = "testval";
-
-                    expect(eci3.query).not.to.exist;
-
-                    var evt = new CustomEvent('keydown');
-                    evt.which = evt.keyCode = 13;
-                    input.dispatchEvent(evt);
-
-                    expect(eci3.query).to.exist;
-                    expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'testval').toJSON());
-                    done();
-                });
-
-                test('clears query and input on clear call', function(done) {
-                    var input = document.querySelector('#eci3').querySelector(":scope paper-input");
-
-                    input.value = "testval";
-
-                    expect(eci3.query).not.to.exist;
-
-                    var evt = new CustomEvent('keydown');
-                    evt.which = evt.keyCode = 13;
-                    input.dispatchEvent(evt);
-
-                    expect(eci3.query).to.exist;
-                    expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'testval').toJSON());
-
-                    eci3.clear();
-
+                    eci2.clear();
                     expect(input.value).to.not.exist;
-                    expect(eci3.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', null).toJSON());
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
                     done();
+
                 });
+
             });
         </script>
     </body>

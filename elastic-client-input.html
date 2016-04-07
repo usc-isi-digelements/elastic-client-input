@@ -10,7 +10,7 @@ Example:
 
         <elastic-client-input
             field="field.path"
-            label="My Input"
+            label-value="My Input"
             value={{inputValue}}
             query={{resultingQuery}}>
             autobuild="true"
@@ -30,8 +30,7 @@ Example:
     <template>
         <paper-input
             label="{{labelValue}}"
-            value="{{value}}"
-            on-keydown="checkEnter"
+            value="{{value::change}}"
         >
         </paper-input>
     </template>
@@ -79,13 +78,6 @@ Example:
                     type: String,
                     readOnly: true,
                     computed: 'resolveLabelValue(field, label)'
-                },
-
-                // Whether the resulting query should be built when the enter
-                // key is pressed
-                buildOnEnter: {
-                    type: Boolean,
-                    value: false
                 }
             },
 
@@ -94,7 +86,7 @@ Example:
             ],
 
             buildQuery: function(field, value) {
-                if(value !== '' && this.autobuild) {
+                if(this.autobuild && this.field) {
                     this.build();
                 }
             },
@@ -103,9 +95,11 @@ Example:
              * Builds the elasticjs query based on the input field value
             */
             build: function() {
-                if(this.field) {
-                    var query = ejs.MatchQuery(this.field, this.value);
-                    this._setQuery(query);
+                if(this.value) {
+                    this._setQuery(ejs.MatchQuery(this.field, this.value));
+                }
+                else {
+                    this._setQuery(ejs.MatchAllQuery());
                 }
             },
 
@@ -117,17 +111,6 @@ Example:
             clear: function() {
                 this.value = null;
                 this.build();
-            },
-
-            /**
-             * Checks to see if the enter key was pressed
-            */
-            checkEnter: function(e) {
-                if(e.keyCode === 13) {
-                    if(this.buildOnEnter) {
-                        this.build();
-                    }
-                }
             }
         });
     </script>
