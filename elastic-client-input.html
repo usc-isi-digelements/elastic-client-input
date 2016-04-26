@@ -44,7 +44,7 @@ Example:
                 id="myinput"
             >
             </paper-input>
-            <paper-icon-button icon="search"></paper-icon-button>
+            <paper-icon-button icon="search" on-tap="build"></paper-icon-button>
             <paper-icon-button icon="clear" on-tap="clear"></paper-icon-button>  
         </div>
 
@@ -126,11 +126,6 @@ Example:
             clear: function() {
                 this.value = null;
                 this.build();
-            },
-
-            clearInput: function() {
-                this.clear();
-                alert('ok');
             }
         });
     </script>
