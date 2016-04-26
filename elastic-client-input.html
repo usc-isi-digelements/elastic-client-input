@@ -1,5 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<!-- <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html"> -->
 <link rel="import" href="./elasticjs.html">
 
 <!--
@@ -27,12 +30,24 @@ Example:
 -->
 
 <dom-module id="elastic-client-input">
+    <style>
+        .container {
+            @apply(--layout-horizontal);
+            @apply(--layout-end);
+        }
+    </style>
     <template>
-        <paper-input
-            label="{{labelValue}}"
-            value="{{value::change}}"
-        >
-        </paper-input>
+        <div class="container">
+            <paper-input class="flex"
+                label="{{labelValue}}"
+                value="{{value::change}}"
+                id="myinput"
+            >
+            </paper-input>
+            <paper-icon-button icon="search"></paper-icon-button>
+            <paper-icon-button icon="clear" on-tap="clear"></paper-icon-button>  
+        </div>
+
     </template>
 
     <script>
@@ -111,6 +126,11 @@ Example:
             clear: function() {
                 this.value = null;
                 this.build();
+            },
+
+            clearInput: function() {
+                this.clear();
+                alert('ok');
             }
         });
     </script>

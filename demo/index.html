@@ -15,19 +15,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <title>elastic-client-input Demo</title>
         <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
         <link rel="import" href="../elastic-client-input.html">
+        <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+        <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
     </head>
     <body unresolved>
         <template is="dom-bind" id="demo">
-            <elastic-client-input
+        <paper-toolbar mode="waterfall">
+            <elastic-client-input class="flex"
                 label="Text Input"
                 field="foo.bar"
                 value="{{val}}"
                 query="{{ejsQuery}}"
                 autobuild="true"
-            ></elastic-client-input>
+            ></elastic-client-input>            
+        </paper-toolbar>
 
             <p><span>Input: </span>{{val}}</p>
             <p><span>Query: </span>{{toJSON(ejsQuery)}}</p>
+
 
             <br><hr><br>
 

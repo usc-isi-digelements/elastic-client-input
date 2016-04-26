@@ -1,6 +1,6 @@
 {
   "name": "elastic-client-input",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     "Next Century Corporation"
   ],
@@ -21,7 +21,8 @@
     "polymer": "Polymer/polymer#^1.2.0",
     "paper-elements": "PolymerElements/paper-elements#^1.0.1",
     "lodash": "4.6.1",
-    "elastic.js": "1.2.0"
+    "elastic.js": "1.2.0",
+    "paper-icon-button": "^1.0.7"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
