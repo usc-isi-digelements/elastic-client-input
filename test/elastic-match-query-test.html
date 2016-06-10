@@ -9,37 +9,37 @@
         <script src="../../web-component-tester/browser.js"></script>
 
         <!-- Import the element to test -->
-        <link rel="import" href="../elastic-client-input.html">
+        <link rel="import" href="../elastic-match-query.html">
     </head>
     <body>
         <!-- Use the document as a place to set up your fixtures. -->
-        <test-fixture id="elastic-client-input-fixture">
+        <test-fixture id="elastic-match-query-fixture">
             <template>
-                <elastic-client-input
+                <elastic-match-query
                     field="my.field">
-                </elastic-client-input>
+                </elastic-match-query>
             </template>
         </test-fixture>
-        <test-fixture id="elastic-client-input-fixture2">
+        <test-fixture id="elastic-match-query-fixture2">
             <template>
-                <elastic-client-input
+                <elastic-match-query
                     id="eci2"
                     field="my.field"
                     label="mylabel"
                     autobuild="true">
-                </elastic-client-input>
+                </elastic-match-query>
             </template>
         </test-fixture>
 
         <script>
-            suite('<elastic-client-input>', function() {
+            suite('<elastic-match-query>', function() {
 
                 var eci;
                 var eci2;
 
                 setup(function() {
-                    eci = fixture('elastic-client-input-fixture');
-                    eci2 = fixture('elastic-client-input-fixture2');
+                    eci = fixture('elastic-match-query-fixture');
+                    eci2 = fixture('elastic-match-query-fixture2');
                 });
 
                 test('defines the field property', function () {
