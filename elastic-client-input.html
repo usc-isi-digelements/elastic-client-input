@@ -111,7 +111,7 @@ Example:
             */
             build: function() {
                 if(this.value) {
-                    this._setQuery(ejs.MatchQuery(this.field, this.value));
+                    this._setQuery(ejs.QueryStringQuery(this.value).fields(this.field));
                 }
                 else {
                     this._setQuery(ejs.MatchAllQuery());

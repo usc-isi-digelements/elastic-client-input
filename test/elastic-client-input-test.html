@@ -69,7 +69,7 @@
                     expect(eci2.query).not.to.exist;
                     eci2.value = "foo";
                     expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'foo').toJSON());
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
                 });
 
                 // test clear()
@@ -78,7 +78,7 @@
                     expect(eci2.query).not.to.exist;
                     eci2.value = "foo";
                     expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchQuery('my.field', 'foo').toJSON());
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
 
                     eci2.clear();
                     expect(input.value).to.not.exist;
