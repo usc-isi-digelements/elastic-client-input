@@ -44,8 +44,7 @@ Example:
                 id="myinput"
             >
             </paper-input>
-            <paper-icon-button icon="search" on-tap="build"></paper-icon-button>
-            <paper-icon-button icon="clear" on-tap="clear"></paper-icon-button>  
+            <paper-icon-button icon="search" title="Search" on-tap="build"></paper-icon-button>
         </div>
 
     </template>
@@ -113,19 +112,16 @@ Example:
                 if(this.value) {
                     this._setQuery(ejs.QueryStringQuery(this.value).fields(this.field));
                 }
-                else {
+                else if(this.value === null) {
                     this._setQuery(ejs.MatchAllQuery());
+                }
+                else {
+                    this._setQuery(undefined);
                 }
             },
 
             resolveLabelValue: function(field, label) {
                 return label || field;
-            },
-
-            //Clears the input value and the resulting query
-            clear: function() {
-                this.value = null;
-                this.build();
             }
         });
     </script>
