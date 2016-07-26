@@ -110,7 +110,9 @@ Example:
             */
             build: function() {
                 if(this.value) {
-                    this._setQuery(ejs.QueryStringQuery(this.value).fields(this.field));
+                    // Remove slashes because they cause elasticsearch errors.
+                    var queryValue = this.value.replace('/', ' ');
+                    this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
                 }
                 else if(this.value === null) {
                     this._setQuery(ejs.MatchAllQuery());

@@ -92,6 +92,13 @@
                     eci2.value = '';
                     expect(eci2.query).not.to.exist;
                 });
+
+                test('correctly escapes slashes in value', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = 'my/value';
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
             });
         </script>
     </body>
