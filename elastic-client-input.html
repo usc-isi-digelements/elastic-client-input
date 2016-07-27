@@ -35,14 +35,16 @@ Example:
             @apply(--layout-horizontal);
             @apply(--layout-end);
         }
+        paper-icon-button {
+            @apply(--paper-icon-button);
+        }
     </style>
     <template>
         <div class="container">
             <paper-input class="flex"
                 label="{{labelValue}}"
                 value="{{value::change}}"
-                id="myinput"
-            >
+                id="myinput">
             </paper-input>
             <paper-icon-button icon="search" title="Search" on-tap="build"></paper-icon-button>
         </div>
@@ -71,6 +73,12 @@ Example:
                     type: Object,
                     readOnly: true,
                     notify: true
+                },
+
+                // Whether advanced search mode is enabled.
+                advanced: {
+                    type: Boolean,
+                    value: false
                 },
 
                 // Whether or not to automatically build the query on change of
@@ -110,8 +118,7 @@ Example:
             */
             build: function() {
                 if(this.value) {
-                    // Remove slashes because they cause elasticsearch errors.
-                    var queryValue = this.value.replace('/', ' ');
+                    var queryValue = this.advanced ? this.value : this.removeReservedCharacters(this.value);
                     this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
                 }
                 else if(this.value === null) {
@@ -120,6 +127,10 @@ Example:
                 else {
                     this._setQuery(undefined);
                 }
+            },
+
+            removeReservedCharacters: function(value) {
+                return value.replace(/\+|\-|\=|\&|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\//g, ' ');
             },
 
             resolveLabelValue: function(field, label) {

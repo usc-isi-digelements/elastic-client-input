@@ -64,6 +64,10 @@
                     assert.equal(eci2.autobuild, true);
                 });
 
+                test('correctly defaults advanced', function() {
+                    assert.equal(eci2.advanced, false);
+                });
+
                 test('does trigger query build on input if autobuild is set', function() {
                     expect(eci2.query).not.to.exist;
                     eci2.value = 'foo';
@@ -93,11 +97,213 @@
                     expect(eci2.query).not.to.exist;
                 });
 
-                test('correctly escapes slashes in value', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = 'my/value';
-                    expect(eci2.query).to.exist;
+                test('non-advanced search does escape + in value', function() {
+                    eci2.value = 'my+value';
                     expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape - in value', function() {
+                    eci2.value = 'my-value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape = in value', function() {
+                    eci2.value = 'my=value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape & in value', function() {
+                    eci2.value = 'my&value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape | in value', function() {
+                    eci2.value = 'my|value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape > in value', function() {
+                    eci2.value = 'my>value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape < in value', function() {
+                    eci2.value = 'my<value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape ! in value', function() {
+                    eci2.value = 'my!value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape ( and ) in value', function() {
+                    eci2.value = '(my value)';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery(' my value ').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape { and } in value', function() {
+                    eci2.value = '{my value}';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery(' my value ').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape [ and ] in value', function() {
+                    eci2.value = '[my value]';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery(' my value ').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape ^ in value', function() {
+                    eci2.value = 'my^value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape " in value', function() {
+                    eci2.value = '"my value"';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery(' my value ').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape ~ in value', function() {
+                    eci2.value = 'my~value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape * in value', function() {
+                    eci2.value = 'my*value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape ? in value', function() {
+                    eci2.value = 'my?value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape \\ in value', function() {
+                    eci2.value = 'my\\value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape single / in value', function() {
+                    eci2.value = 'my/value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                });
+
+                test('non-advanced search does escape double / in value', function() {
+                    eci2.value = '/my value/';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery(' my value ').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape + in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my+value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my+value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape - in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my-value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my-value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape = in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my=value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my=value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape & in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my&value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my&value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape | in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my|value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my|value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape > in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my>value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my>value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape < in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my<value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my<value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape ! in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my!value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my!value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape ( and ) in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = '(my value)';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('(my value)').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape { and } in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = '{my value}';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('{my value}').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape [ and ] in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = '[my value]';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('[my value]').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape ^ in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my^value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my^value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape " in value', function() {
+                      eci2.advanced = true;
+                    eci2.value = '"my value"';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('"my value"').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape ~ in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my~value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my~value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape * in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my*value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my*value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape ? in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my?value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my?value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape \\ in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my\\value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my\\value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape single / in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = 'my/value';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my/value').fields('my.field').toJSON());
+                });
+
+                test('advanced search does not escape double / in value', function() {
+                    eci2.advanced = true;
+                    eci2.value = '/my value/';
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('/my value/').fields('my.field').toJSON());
                 });
             });
         </script>
