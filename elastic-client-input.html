@@ -117,12 +117,17 @@ Example:
              * Builds the elasticjs query based on the input field value
             */
             build: function() {
-                var queryValue = (this.advanced ? (this.value || '') : this.removeReservedCharacters(this.value || '')).trim();
-                if(queryValue) {
-                    this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
+                if(this.value === null) {
+                    this._setQuery(ejs.MatchAllQuery());
                 }
                 else {
-                    this._setQuery(ejs.MatchAllQuery());
+                    var queryValue = (this.advanced ? (this.value || '') : this.removeReservedCharacters(this.value || '')).trim();
+                    if(queryValue) {
+                        this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
+                    }
+                    else {
+                        this._setQuery(undefined);
+                    }
                 }
             },
 

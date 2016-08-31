@@ -33,7 +33,6 @@
 
         <script>
             suite('<elastic-client-input>', function() {
-
                 var eci;
                 var eci2;
 
@@ -75,18 +74,16 @@
                     expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
                 });
 
-                test('does trigger match all query build on empty input', function() {
+                test('does not trigger query build on empty input', function() {
                     expect(eci2.query).not.to.exist;
                     eci2.value = '';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    expect(eci2.query).not.to.exist;
                 });
 
-                test('does trigger match all query build on whitespace input', function() {
+                test('does not trigger query build on whitespace input', function() {
                     expect(eci2.query).not.to.exist;
                     eci2.value = ' ';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    expect(eci2.query).not.to.exist;
                 });
 
                 test('does trigger match all query build on null input', function() {
@@ -96,7 +93,7 @@
                     expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
                 });
 
-                test('correctly changes query on new input', function() {
+                test('correctly changes query on changing input string', function() {
                     expect(eci2.query).not.to.exist;
                     eci2.value = 'foo';
                     expect(eci2.query).to.exist;
@@ -104,6 +101,62 @@
                     eci2.value = 'bar';
                     expect(eci2.query).to.exist;
                     expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('bar').fields('my.field').toJSON());
+                });
+
+                test('correctly removes query on changing input string to empty string', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = 'foo';
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    eci2.value = '';
+                    expect(eci2.query).not.to.exist;
+                });
+
+                test('correctly changes query on changing input string to null', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = 'foo';
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    eci2.value = null;
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                });
+
+                test('correctly creates query on changing empty input to string', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = '';
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = 'foo';
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                });
+
+                test('correctly creates query on changing empty input to null', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = '';
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = null;
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                });
+
+                test('correctly changes query on changing null input to string', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = null;
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    eci2.value = 'foo';
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                });
+
+                test('correctly removes query on changing null input to empty', function() {
+                    expect(eci2.query).not.to.exist;
+                    eci2.value = null;
+                    expect(eci2.query).to.exist;
+                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    eci2.value = '';
+                    expect(eci2.query).not.to.exist;
                 });
 
                 test('non-advanced search does escape + in value', function() {
