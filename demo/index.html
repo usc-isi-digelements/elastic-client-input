@@ -26,7 +26,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 field="foo.bar"
                 value="{{val}}"
                 query="{{ejsQuery}}"
-                autobuild="true"
             ></elastic-client-input>            
         </paper-toolbar>
 
@@ -58,7 +57,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             })(document);
 
             function callBuild() {
-                document.getElementById('input2').build();
+                document.getElementById('input2')._build();
             }
         </script>
 

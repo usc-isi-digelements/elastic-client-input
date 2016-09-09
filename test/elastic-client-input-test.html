@@ -8,11 +8,9 @@
         <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
         <script src="../../web-component-tester/browser.js"></script>
 
-        <!-- Import the element to test -->
         <link rel="import" href="../elastic-client-input.html">
     </head>
     <body>
-        <!-- Use the document as a place to set up your fixtures. -->
         <test-fixture id="elastic-client-input-fixture">
             <template>
                 <elastic-client-input
@@ -20,352 +18,400 @@
                 </elastic-client-input>
             </template>
         </test-fixture>
-        <test-fixture id="elastic-client-input-fixture2">
-            <template>
-                <elastic-client-input
-                    id="eci2"
-                    field="my.field"
-                    label="mylabel"
-                    autobuild="true">
-                </elastic-client-input>
-            </template>
-        </test-fixture>
 
         <script>
             suite('<elastic-client-input>', function() {
-                var eci;
-                var eci2;
+                var component;
 
                 setup(function() {
-                    eci = fixture('elastic-client-input-fixture');
-                    eci2 = fixture('elastic-client-input-fixture2');
+                    component = fixture('elastic-client-input-fixture');
                 });
 
                 test('defines the field property', function () {
-                    assert.equal(eci.field, 'my.field');
+                    assert.equal(component.field, 'my.field');
                 });
 
                 test('sets label value to field value if not defined', function() {
-                    assert.equal(eci.labelValue, 'my.field');
+                    assert.equal(component.labelValue, 'my.field');
                 });
 
                 test('properly sets the label if defined', function() {
-                    assert.equal(eci2.labelValue, 'mylabel');
-                    var label = document.querySelector('#eci2').querySelector(':scope label');
+                    component.label = 'mylabel';
+                    assert.equal(component.labelValue, 'mylabel');
+                    var label = component.$$('paper-input').querySelector(':scope label');
                     assert.equal(label.textContent, 'mylabel');
                 });
 
-                test('correctly defaults autobuild', function() {
-                    assert.equal(eci.autobuild, false);
-                });
-
-                test('correctly sets autobuild', function() {
-                    assert.equal(eci2.autobuild, true);
-                });
-
                 test('correctly defaults advanced', function() {
-                    assert.equal(eci2.advanced, false);
+                    assert.equal(component.advanced, false);
                 });
 
-                test('does trigger query build on input if autobuild is set', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = 'foo';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                test('does not build query on keydown if key is not enter', function() {
+                    expect(component.query).not.to.exist;
+                    component.value = 'foo';
+                    component._onKeydown({
+                      keyCode: 1
+                    });
+                    expect(component.query).to.not.exist;
                 });
 
-                test('does not trigger query build on empty input', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = '';
-                    expect(eci2.query).not.to.exist;
+                test('does build query on keydown if key is enter', function() {
+                    expect(component.query).not.to.exist;
+                    component.value = 'foo';
+                    component._onKeydown({
+                      keyCode: 13
+                    });
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
                 });
 
-                test('does not trigger query build on whitespace input', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = ' ';
-                    expect(eci2.query).not.to.exist;
+                test('does not build query on empty input', function() {
+                    expect(component.query).not.to.exist;
+                    component.value = '';
+                    component._build();
+                    expect(component.query).not.to.exist;
                 });
 
-                test('does trigger match all query build on null input', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = null;
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                test('does not build query on whitespace input', function() {
+                    expect(component.query).not.to.exist;
+                    component.value = ' ';
+                    component._build();
+                    expect(component.query).not.to.exist;
+                });
+
+                test('does build match all query on null input', function() {
+                    expect(component.query).not.to.exist;
+                    component.value = null;
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
                 });
 
                 test('correctly changes query on changing input string', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = 'foo';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                    eci2.value = 'bar';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('bar').fields('my.field').toJSON());
+                    expect(component.query).not.to.exist;
+                    component.value = 'foo';
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    component.value = 'bar';
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('bar').fields('my.field').toJSON());
                 });
 
                 test('correctly removes query on changing input string to empty string', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = 'foo';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                    eci2.value = '';
-                    expect(eci2.query).not.to.exist;
+                    expect(component.query).not.to.exist;
+                    component.value = 'foo';
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    component.value = '';
+                    component._build();
+                    expect(component.query).not.to.exist;
                 });
 
                 test('correctly changes query on changing input string to null', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = 'foo';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                    eci2.value = null;
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    expect(component.query).not.to.exist;
+                    component.value = 'foo';
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    component.value = null;
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
                 });
 
                 test('correctly creates query on changing empty input to string', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = '';
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = 'foo';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    expect(component.query).not.to.exist;
+                    component.value = '';
+                    component._build();
+                    expect(component.query).not.to.exist;
+                    component.value = 'foo';
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
                 });
 
                 test('correctly creates query on changing empty input to null', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = '';
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = null;
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    expect(component.query).not.to.exist;
+                    component.value = '';
+                    component._build();
+                    expect(component.query).not.to.exist;
+                    component.value = null;
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
                 });
 
                 test('correctly changes query on changing null input to string', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = null;
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                    eci2.value = 'foo';
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+                    expect(component.query).not.to.exist;
+                    component.value = null;
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    component.value = 'foo';
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
                 });
 
                 test('correctly removes query on changing null input to empty', function() {
-                    expect(eci2.query).not.to.exist;
-                    eci2.value = null;
-                    expect(eci2.query).to.exist;
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                    eci2.value = '';
-                    expect(eci2.query).not.to.exist;
+                    expect(component.query).not.to.exist;
+                    component.value = null;
+                    component._build();
+                    expect(component.query).to.exist;
+                    expect(component.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+                    component.value = '';
+                    component._build();
+                    expect(component.query).not.to.exist;
                 });
 
                 test('non-advanced search does escape + in value', function() {
-                    eci2.value = 'my+value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my+value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape - in value', function() {
-                    eci2.value = 'my-value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my-value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape = in value', function() {
-                    eci2.value = 'my=value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my=value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape & in value', function() {
-                    eci2.value = 'my&value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my&value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape | in value', function() {
-                    eci2.value = 'my|value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my|value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape > in value', function() {
-                    eci2.value = 'my>value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my>value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape < in value', function() {
-                    eci2.value = 'my<value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my<value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape ! in value', function() {
-                    eci2.value = 'my!value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my!value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape ( and ) in value', function() {
-                    eci2.value = '(my value)';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = '(my value)';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape { and } in value', function() {
-                    eci2.value = '{my value}';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = '{my value}';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape [ and ] in value', function() {
-                    eci2.value = '[my value]';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = '[my value]';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape ^ in value', function() {
-                    eci2.value = 'my^value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my^value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape " in value', function() {
-                    eci2.value = '"my value"';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = '"my value"';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape ~ in value', function() {
-                    eci2.value = 'my~value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my~value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape * in value', function() {
-                    eci2.value = 'my*value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my*value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape ? in value', function() {
-                    eci2.value = 'my?value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my?value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape \\ in value', function() {
-                    eci2.value = 'my\\value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my\\value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape single / in value', function() {
-                    eci2.value = 'my/value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = 'my/value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('non-advanced search does escape double / in value', function() {
-                    eci2.value = '/my value/';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+                    component.value = '/my value/';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape + in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my+value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my+value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my+value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my+value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape - in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my-value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my-value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my-value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my-value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape = in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my=value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my=value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my=value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my=value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape & in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my&value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my&value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my&value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my&value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape | in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my|value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my|value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my|value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my|value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape > in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my>value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my>value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my>value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my>value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape < in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my<value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my<value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my<value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my<value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape ! in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my!value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my!value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my!value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my!value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape ( and ) in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = '(my value)';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('(my value)').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = '(my value)';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('(my value)').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape { and } in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = '{my value}';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('{my value}').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = '{my value}';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('{my value}').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape [ and ] in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = '[my value]';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('[my value]').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = '[my value]';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('[my value]').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape ^ in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my^value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my^value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my^value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my^value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape " in value', function() {
-                      eci2.advanced = true;
-                    eci2.value = '"my value"';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('"my value"').fields('my.field').toJSON());
+                      component.advanced = true;
+                    component.value = '"my value"';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('"my value"').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape ~ in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my~value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my~value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my~value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my~value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape * in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my*value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my*value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my*value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my*value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape ? in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my?value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my?value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my?value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my?value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape \\ in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my\\value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my\\value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my\\value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my\\value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape single / in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = 'my/value';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my/value').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = 'my/value';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my/value').fields('my.field').toJSON());
                 });
 
                 test('advanced search does not escape double / in value', function() {
-                    eci2.advanced = true;
-                    eci2.value = '/my value/';
-                    expect(eci2.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('/my value/').fields('my.field').toJSON());
+                    component.advanced = true;
+                    component.value = '/my value/';
+                    component._build();
+                    expect(component.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('/my value/').fields('my.field').toJSON());
                 });
             });
         </script>

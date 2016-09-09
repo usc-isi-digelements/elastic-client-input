@@ -1,29 +1,19 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
-<!-- <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html"> -->
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="./elasticjs.html">
 
 <!--
-An element which renders an input box and produces an elasticjs query based
-on the input value
+An element which renders an input box and produces an elasticjs query based on the input value.
 
 Example:
 
         <elastic-client-input
             field="field.path"
             label-value="My Input"
-            value={{inputValue}}
-            query={{resultingQuery}}>
-            autobuild="true"
-        </elastic-client-input>
-
-Example:
-        <elastic-client-input
-            field="field.path"
             value="{{inputValue}}"
-            query="{{resultingQuery}}"
+            query="{{resultingQuery}}">
         </elastic-client-input>
 
 @demo demo/index.html
@@ -43,10 +33,10 @@ Example:
         <div class="container">
             <paper-input class="flex"
                 label="{{labelValue}}"
-                value="{{value::change}}"
-                id="myinput">
+                value="{{_input}}"
+                on-keydown="_onKeydown">
             </paper-input>
-            <paper-icon-button icon="search" title="Search" on-tap="build"></paper-icon-button>
+            <paper-icon-button icon="search" title="Search" on-tap="_buildQuery"></paper-icon-button>
         </div>
 
     </template>
@@ -65,7 +55,8 @@ Example:
                 // The raw input string
                 value: {
                     type: String,
-                    notify: true
+                    notify: true,
+                    observer: '_buildQueryUsingValue'
                 },
 
                 // The resulting elasticjs query from this input
@@ -81,13 +72,6 @@ Example:
                     value: false
                 },
 
-                // Whether or not to automatically build the query on change of
-                // the value property or to wait for build to be manually called
-                autobuild: {
-                    type: Boolean,
-                    value: false
-                },
-
                 // Specifies the label for the input field. If not specified
                 // the field will be used
                 label: {
@@ -99,29 +83,24 @@ Example:
                 labelValue: {
                     type: String,
                     readOnly: true,
-                    computed: 'resolveLabelValue(field, label)'
-                }
-            },
+                    computed: '_computeLabelValue(field, label)'
+                },
 
-            observers: [
-                'buildQuery(field, value)'
-            ],
-
-            buildQuery: function(field, value) {
-                if(this.autobuild && this.field) {
-                    this.build();
+                _input: {
+                    type: String
                 }
             },
 
             /**
              * Builds the elasticjs query based on the input field value
             */
-            build: function() {
-                if(this.value === null) {
+            _buildQuery: function() {
+                this.value = this._input;
+                if(this._input === null) {
                     this._setQuery(ejs.MatchAllQuery());
                 }
                 else {
-                    var queryValue = (this.advanced ? (this.value || '') : this.removeReservedCharacters(this.value || '')).trim();
+                    var queryValue = (this.advanced ? (this._input || '') : this._removeReservedCharacters(this._input || '')).trim();
                     if(queryValue) {
                         this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
                     }
@@ -131,12 +110,23 @@ Example:
                 }
             },
 
-            removeReservedCharacters: function(value) {
-                return value.replace(/\+|\-|\=|\&|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\//g, ' ');
+            _buildQueryUsingValue: function() {
+                this._input = this.value;
+                this._buildQuery();
             },
 
-            resolveLabelValue: function(field, label) {
+            _computeLabelValue: function(field, label) {
                 return label || field;
+            },
+
+            _onKeydown: function(event) {
+              if(event.keyCode === 13 && this.field) {
+                this._buildQuery();
+              }
+            },
+
+            _removeReservedCharacters: function(value) {
+                return value.replace(/\+|\-|\=|\&|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\//g, ' ');
             }
         });
     </script>

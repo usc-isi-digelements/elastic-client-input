@@ -1,10 +1,10 @@
 {
   "name": "elastic-client-input",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "authors": [
     "Next Century Corporation"
   ],
-  "description": "",
+  "description": "An element which renders an input box and produces an elasticjs query based on the input value.",
   "keywords": [
     "web-component",
     "polymer",
