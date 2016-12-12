@@ -2,19 +2,20 @@
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="./elasticjs.html">
+<script src="../elastic.js/dist/elastic.js"></script>
 
 <!--
-An element which renders an input box and produces an elasticjs query based on the input value.
+A Polymer Element which renders an input box and produces an elasticjs query based on the input value.
 
-Example:
-
-        <elastic-client-input
-            field="field.path"
-            label-value="My Input"
-            value="{{inputValue}}"
-            query="{{resultingQuery}}">
-        </elastic-client-input>
+### Example
+```html
+<elastic-client-input
+  field="field.path"
+  label-value="My Input"
+  value="{{inputValue}}"
+  query="{{resultingQuery}}">
+</elastic-client-input>
+```
 
 @demo demo/index.html
 -->
@@ -29,6 +30,7 @@ Example:
             @apply(--paper-icon-button);
         }
     </style>
+
     <template>
         <div class="container">
             <paper-input class="flex"
@@ -38,7 +40,6 @@ Example:
             </paper-input>
             <paper-icon-button icon="search" title="Search" on-tap="_buildQuery"></paper-icon-button>
         </div>
-
     </template>
 
     <script>
@@ -46,53 +47,97 @@ Example:
             is: 'elastic-client-input',
 
             properties: {
-                // The field which the resulting elasticjs query should
-                // be targetted against
+                /**
+                 * (Required)
+                 *
+                 * The query field.
+                 *
+                 * @type {String}
+                 */
                 field: {
                     type: String
                 },
 
-                // The raw input string
+                /**
+                 * (Optional)
+                 *
+                 * The query value (if not set using the paper-input element).
+                 *
+                 * @type {String}
+                 */
                 value: {
                     type: String,
                     notify: true,
                     observer: '_buildQueryUsingValue'
                 },
 
-                // The resulting elasticjs query from this input
+                /**
+                 * (Output)
+                 *
+                 * The resulting elasticjs query from this input.
+                 *
+                 * @type {Object}
+                 */
                 query: {
                     type: Object,
                     readOnly: true,
                     notify: true
                 },
 
-                // Whether advanced search mode is enabled.
+                /**
+                 * (Optional)
+                 *
+                 * Whether advanced search mode is enabled.
+                 *
+                 * @type {Boolean}
+                 * @default false
+                 */
                 advanced: {
                     type: Boolean,
                     value: false
                 },
 
-                // Specifies the label for the input field. If not specified
-                // the field will be used
+                /**
+                 * (Optional)
+                 *
+                 * Specifies the label for the input field. If not specified the field will be used.
+                 *
+                 * @type {String}
+                 * @default ''
+                 */
                 label: {
                     type: String,
                     value: ''
                 },
 
-                // The computed label; derived from the label or the field
+                /**
+                 * (Output)
+                 *
+                 * The computed label derived from the label or the field.
+                 *
+                 * @type {String}
+                 */
                 labelValue: {
                     type: String,
                     readOnly: true,
                     computed: '_computeLabelValue(field, label)'
                 },
 
+                /**
+                 * The value from the paper-input element.
+                 *
+                 * @type {String}
+                 * @private
+                 */
                 _input: {
                     type: String
                 }
             },
 
             /**
-             * Builds the elasticjs query based on the input field value
+             * Builds and sets the elasticjs query object using the field and _input properties.
+             *
+             * @private
             */
             _buildQuery: function() {
                 this.value = this._input;
@@ -110,21 +155,47 @@ Example:
                 }
             },
 
+            /**
+             * Builds and sets the elasticjs query object using the field and value properties.
+             *
+             * @private
+             */
             _buildQueryUsingValue: function() {
                 this._input = this.value;
                 this._buildQuery();
             },
 
+            /**
+             * Returns the label value using the given field and label.
+             *
+             * @param {String} field
+             * @param {String} label
+             * @return {String}
+             * @private
+             */
             _computeLabelValue: function(field, label) {
                 return label || field;
             },
 
+            /**
+             * Builds the elasticjs query object on an Enter keydown event.
+             *
+             * @event keydown
+             * @private
+             */
             _onKeydown: function(event) {
               if(event.keyCode === 13 && this.field) {
                 this._buildQuery();
               }
             },
 
+            /**
+             * Removes reserved characters from the given value.
+             *
+             * @param {String} value
+             * @return {String}
+             * @private
+             */
             _removeReservedCharacters: function(value) {
                 return value.replace(/\+|\-|\=|\&|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\//g, ' ');
             }
