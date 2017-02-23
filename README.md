@@ -6,7 +6,7 @@ Example:
 ```html
 <elastic-client-input
   field="field.path"
-  label-value="My Input"
+  label="My Input"
   value="{{inputValue}}"
   query="{{resultingQuery}}">
 </elastic-client-input>

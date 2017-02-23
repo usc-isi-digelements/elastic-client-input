@@ -44,12 +44,12 @@ limitations under the License.
                 });
 
                 test('sets label value to field value if not defined', function() {
-                    assert.equal(element.labelValue, 'my.field');
+                    assert.equal(element._labelValue, 'my.field');
                 });
 
                 test('properly sets the label if defined', function() {
                     element.label = 'mylabel';
-                    assert.equal(element.labelValue, 'mylabel');
+                    assert.equal(element._labelValue, 'mylabel');
                     var label = element.$$('paper-input').label;
                     assert.equal(label, 'mylabel');
                 });

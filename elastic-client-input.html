@@ -27,7 +27,7 @@ A Polymer Element which renders an input box and produces an elasticjs query bas
 ```html
 <elastic-client-input
   field="field.path"
-  label-value="My Input"
+  label="My Input"
   value="{{inputValue}}"
   query="{{resultingQuery}}">
 </elastic-client-input>
@@ -50,7 +50,7 @@ A Polymer Element which renders an input box and produces an elasticjs query bas
     <template>
         <div class="container">
             <paper-input class="flex"
-                label="{{labelValue}}"
+                label="{{_labelValue}}"
                 value="{{_input}}"
                 on-keydown="_onKeydown">
             </paper-input>
@@ -133,7 +133,7 @@ A Polymer Element which renders an input box and produces an elasticjs query bas
                  *
                  * @type {String}
                  */
-                labelValue: {
+                _labelValue: {
                     type: String,
                     readOnly: true,
                     computed: '_computeLabelValue(field, label)'
