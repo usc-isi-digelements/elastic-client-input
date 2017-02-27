@@ -1,7 +1,7 @@
 {
   "name": "elastic-client-input",
   "description": "A Polymer Element which renders an input box and produces an elasticjs query based on the input value.",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "authors": ["Next Century Corporation"],
   "license": "Apache-2.0",
   "keywords": [
