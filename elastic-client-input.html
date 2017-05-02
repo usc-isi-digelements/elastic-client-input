@@ -38,180 +38,180 @@ A Polymer Element which renders an input box and produces an elasticjs query bas
 -->
 
 <dom-module id="elastic-client-input">
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-        paper-icon-button {
-            @apply(--paper-icon-button);
+  <style include="iron-flex iron-flex-alignment"></style>
+  <style>
+    paper-icon-button {
+      @apply(--paper-icon-button);
+    }
+  </style>
+
+  <template>
+    <div class="layout horizontal end">
+      <paper-input class="flex"
+        label="{{_labelValue}}"
+        value="{{_input}}"
+        on-keydown="_onKeydown">
+      </paper-input>
+      <paper-icon-button icon="search" title="Search" on-tap="_buildQuery"></paper-icon-button>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'elastic-client-input',
+
+      properties: {
+        /**
+         * (Required)
+         *
+         * The query field.
+         *
+         * @type {String}
+         */
+        field: {
+          type: String
+        },
+
+        /**
+         * (Optional)
+         *
+         * The query value (if not set using the paper-input element).
+         *
+         * @type {String}
+         */
+        value: {
+          type: String,
+          notify: true,
+          observer: '_buildQueryUsingValue'
+        },
+
+        /**
+         * (Output)
+         *
+         * The resulting elasticjs query from this input.
+         *
+         * @type {Object}
+         */
+        query: {
+          type: Object,
+          readOnly: true,
+          notify: true
+        },
+
+        /**
+         * (Optional)
+         *
+         * Whether advanced search mode is enabled.
+         *
+         * @type {Boolean}
+         * @default false
+         */
+        advanced: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * (Optional)
+         *
+         * Specifies the label for the input field. If not specified the field will be used.
+         *
+         * @type {String}
+         * @default ''
+         */
+        label: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * The computed label derived from the label or the field.
+         *
+         * @type {String}
+         * @private
+         */
+        _labelValue: {
+          type: String,
+          readOnly: true,
+          computed: '_computeLabelValue(field, label)'
+        },
+
+        /**
+         * The value from the paper-input element.
+         *
+         * @type {String}
+         * @private
+         */
+        _input: {
+          type: String
         }
-    </style>
+      },
 
-    <template>
-        <div class="layout horizontal end">
-            <paper-input class="flex"
-                label="{{_labelValue}}"
-                value="{{_input}}"
-                on-keydown="_onKeydown">
-            </paper-input>
-            <paper-icon-button icon="search" title="Search" on-tap="_buildQuery"></paper-icon-button>
-        </div>
-    </template>
+      /**
+       * Builds and sets the elasticjs query object using the field and _input properties.
+       *
+       * @private
+      */
+      _buildQuery: function() {
+        this.value = this._input;
+        if(this._input === null) {
+          this._setQuery(ejs.MatchAllQuery());
+        }
+        else {
+          var queryValue = (this.advanced ? (this._input || '') : this._removeReservedCharacters(this._input || '')).trim();
+          if(queryValue) {
+            this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
+          }
+          else {
+            this._setQuery(undefined);
+          }
+        }
+      },
 
-    <script>
-        Polymer({
-            is: 'elastic-client-input',
+      /**
+       * Builds and sets the elasticjs query object using the field and value properties.
+       *
+       * @private
+       */
+      _buildQueryUsingValue: function() {
+        this._input = this.value;
+        this._buildQuery();
+      },
 
-            properties: {
-                /**
-                 * (Required)
-                 *
-                 * The query field.
-                 *
-                 * @type {String}
-                 */
-                field: {
-                    type: String
-                },
+      /**
+       * Returns the label value using the given field and label.
+       *
+       * @param {String} field
+       * @param {String} label
+       * @return {String}
+       * @private
+       */
+      _computeLabelValue: function(field, label) {
+        return label || field;
+      },
 
-                /**
-                 * (Optional)
-                 *
-                 * The query value (if not set using the paper-input element).
-                 *
-                 * @type {String}
-                 */
-                value: {
-                    type: String,
-                    notify: true,
-                    observer: '_buildQueryUsingValue'
-                },
+      /**
+       * Builds the elasticjs query object on an Enter keydown event.
+       *
+       * @event keydown
+       * @private
+       */
+      _onKeydown: function(event) {
+        if(event.keyCode === 13 && this.field) {
+        this._buildQuery();
+        }
+      },
 
-                /**
-                 * (Output)
-                 *
-                 * The resulting elasticjs query from this input.
-                 *
-                 * @type {Object}
-                 */
-                query: {
-                    type: Object,
-                    readOnly: true,
-                    notify: true
-                },
-
-                /**
-                 * (Optional)
-                 *
-                 * Whether advanced search mode is enabled.
-                 *
-                 * @type {Boolean}
-                 * @default false
-                 */
-                advanced: {
-                    type: Boolean,
-                    value: false
-                },
-
-                /**
-                 * (Optional)
-                 *
-                 * Specifies the label for the input field. If not specified the field will be used.
-                 *
-                 * @type {String}
-                 * @default ''
-                 */
-                label: {
-                    type: String,
-                    value: ''
-                },
-
-                /**
-                 * The computed label derived from the label or the field.
-                 *
-                 * @type {String}
-                 * @private
-                 */
-                _labelValue: {
-                    type: String,
-                    readOnly: true,
-                    computed: '_computeLabelValue(field, label)'
-                },
-
-                /**
-                 * The value from the paper-input element.
-                 *
-                 * @type {String}
-                 * @private
-                 */
-                _input: {
-                    type: String
-                }
-            },
-
-            /**
-             * Builds and sets the elasticjs query object using the field and _input properties.
-             *
-             * @private
-            */
-            _buildQuery: function() {
-                this.value = this._input;
-                if(this._input === null) {
-                    this._setQuery(ejs.MatchAllQuery());
-                }
-                else {
-                    var queryValue = (this.advanced ? (this._input || '') : this._removeReservedCharacters(this._input || '')).trim();
-                    if(queryValue) {
-                        this._setQuery(ejs.QueryStringQuery(queryValue).fields(this.field));
-                    }
-                    else {
-                        this._setQuery(undefined);
-                    }
-                }
-            },
-
-            /**
-             * Builds and sets the elasticjs query object using the field and value properties.
-             *
-             * @private
-             */
-            _buildQueryUsingValue: function() {
-                this._input = this.value;
-                this._buildQuery();
-            },
-
-            /**
-             * Returns the label value using the given field and label.
-             *
-             * @param {String} field
-             * @param {String} label
-             * @return {String}
-             * @private
-             */
-            _computeLabelValue: function(field, label) {
-                return label || field;
-            },
-
-            /**
-             * Builds the elasticjs query object on an Enter keydown event.
-             *
-             * @event keydown
-             * @private
-             */
-            _onKeydown: function(event) {
-              if(event.keyCode === 13 && this.field) {
-                this._buildQuery();
-              }
-            },
-
-            /**
-             * Removes reserved characters from the given value.
-             *
-             * @param {String} value
-             * @return {String}
-             * @private
-             */
-            _removeReservedCharacters: function(value) {
-                return value.replace(/\+|\-|\=|\&|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\//g, ' ');
-            }
-        });
-    </script>
+      /**
+       * Removes reserved characters from the given value.
+       *
+       * @param {String} value
+       * @return {String}
+       * @private
+       */
+      _removeReservedCharacters: function(value) {
+        return value.replace(/\+|\-|\=|\&|\||\>|\<|\!|\(|\)|\{|\}|\[|\]|\^|\"|\~|\*|\?|\:|\\|\//g, ' ');
+      }
+    });
+  </script>
 </dom-module>

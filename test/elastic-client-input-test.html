@@ -15,436 +15,436 @@ limitations under the License.
 -->
 
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-        <script src="../../web-component-tester/browser.js"></script>
-        <link rel="import" href="../elastic-client-input.html">
-    </head>
-    <body>
-        <test-fixture id="elastic-client-input-fixture">
-            <template>
-                <elastic-client-input
-                    field="my.field">
-                </elastic-client-input>
-            </template>
-        </test-fixture>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <link rel="import" href="../elastic-client-input.html">
+  </head>
+  <body>
+    <test-fixture id="elastic-client-input-fixture">
+      <template>
+        <elastic-client-input
+          field="my.field">
+        </elastic-client-input>
+      </template>
+    </test-fixture>
 
-        <script>
-            suite('<elastic-client-input>', function() {
-                var element;
+    <script>
+      suite('<elastic-client-input>', function() {
+        var element;
 
-                setup(function() {
-                    element = fixture('elastic-client-input-fixture');
-                });
+        setup(function() {
+          element = fixture('elastic-client-input-fixture');
+        });
 
-                test('defines the field property', function () {
-                    assert.equal(element.field, 'my.field');
-                });
+        test('defines the field property', function () {
+          assert.equal(element.field, 'my.field');
+        });
 
-                test('sets label value to field value if not defined', function() {
-                    assert.equal(element._labelValue, 'my.field');
-                });
+        test('sets label value to field value if not defined', function() {
+          assert.equal(element._labelValue, 'my.field');
+        });
 
-                test('properly sets the label if defined', function() {
-                    element.label = 'mylabel';
-                    assert.equal(element._labelValue, 'mylabel');
-                    var label = element.$$('paper-input').label;
-                    assert.equal(label, 'mylabel');
-                });
+        test('properly sets the label if defined', function() {
+          element.label = 'mylabel';
+          assert.equal(element._labelValue, 'mylabel');
+          var label = element.$$('paper-input').label;
+          assert.equal(label, 'mylabel');
+        });
 
-                test('verify other properties of paper-input', function() {
-                    element._input = 'text';
-                    var input = element.$$('paper-input');
-                    assert.equal(input.value, 'text');
-                    assert.equal(input.onKeydown, element._onKeydown({keyCode: 13}));
-                });
+        test('verify other properties of paper-input', function() {
+          element._input = 'text';
+          var input = element.$$('paper-input');
+          assert.equal(input.value, 'text');
+          assert.equal(input.onKeydown, element._onKeydown({keyCode: 13}));
+        });
 
-                test('check if paper-icon-button exist', function() {
-                    assert.isNotNull(element.$$('paper-icon-button[icon="search"]'));
-                    assert.equal(element.$$('paper-icon-button[icon="search"]').onTap, element._buildQuery());
-                });
+        test('check if paper-icon-button exist', function() {
+          assert.isNotNull(element.$$('paper-icon-button[icon="search"]'));
+          assert.equal(element.$$('paper-icon-button[icon="search"]').onTap, element._buildQuery());
+        });
 
-                test('correctly defaults advanced', function() {
-                    assert.equal(element.advanced, false);
-                });
+        test('correctly defaults advanced', function() {
+          assert.equal(element.advanced, false);
+        });
 
-                test('_buildQueryUsingValue observer updates query when value is defined', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = 'foo';
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                });
+        test('_buildQueryUsingValue observer updates query when value is defined', function() {
+          expect(element.query).not.to.exist;
+          element.value = 'foo';
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+        });
 
-                test('does not build query on keydown if key is not enter', function() {
-                    expect(element.query).not.to.exist;
-                    element._input = 'foo';
-                    element._onKeydown({
-                      keyCode: 1
-                    });
-                    expect(element.query).to.not.exist;
-                });
+        test('does not build query on keydown if key is not enter', function() {
+          expect(element.query).not.to.exist;
+          element._input = 'foo';
+          element._onKeydown({
+            keyCode: 1
+          });
+          expect(element.query).to.not.exist;
+        });
 
-                test('does build query on keydown if key is enter', function() {
-                    expect(element.query).not.to.exist;
-                    element._input = 'foo';
-                    element._onKeydown({
-                      keyCode: 13
-                    });
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                });
+        test('does build query on keydown if key is enter', function() {
+          expect(element.query).not.to.exist;
+          element._input = 'foo';
+          element._onKeydown({
+            keyCode: 13
+          });
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+        });
 
-                test('does not build query on empty input', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = '';
-                    element._buildQuery();
-                    expect(element.query).not.to.exist;
-                });
+        test('does not build query on empty input', function() {
+          expect(element.query).not.to.exist;
+          element.value = '';
+          element._buildQuery();
+          expect(element.query).not.to.exist;
+        });
 
-                test('does not build query on whitespace input', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = ' ';
-                    element._buildQuery();
-                    expect(element.query).not.to.exist;
-                });
+        test('does not build query on whitespace input', function() {
+          expect(element.query).not.to.exist;
+          element.value = ' ';
+          element._buildQuery();
+          expect(element.query).not.to.exist;
+        });
 
-                test('does build match all query on null input', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = null;
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                });
+        test('does build match all query on null input', function() {
+          expect(element.query).not.to.exist;
+          element.value = null;
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+        });
 
-                test('correctly changes query on changing input string', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = 'foo';
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                    element.value = 'bar';
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('bar').fields('my.field').toJSON());
-                });
+        test('correctly changes query on changing input string', function() {
+          expect(element.query).not.to.exist;
+          element.value = 'foo';
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+          element.value = 'bar';
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('bar').fields('my.field').toJSON());
+        });
 
-                test('correctly removes query on changing input string to empty string', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = 'foo';
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                    element.value = '';
-                    element._buildQuery();
-                    expect(element.query).not.to.exist;
-                });
+        test('correctly removes query on changing input string to empty string', function() {
+          expect(element.query).not.to.exist;
+          element.value = 'foo';
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+          element.value = '';
+          element._buildQuery();
+          expect(element.query).not.to.exist;
+        });
 
-                test('correctly changes query on changing input string to null', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = 'foo';
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                    element.value = null;
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                });
+        test('correctly changes query on changing input string to null', function() {
+          expect(element.query).not.to.exist;
+          element.value = 'foo';
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+          element.value = null;
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+        });
 
-                test('correctly creates query on changing empty input to string', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = '';
-                    element._buildQuery();
-                    expect(element.query).not.to.exist;
-                    element.value = 'foo';
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                });
+        test('correctly creates query on changing empty input to string', function() {
+          expect(element.query).not.to.exist;
+          element.value = '';
+          element._buildQuery();
+          expect(element.query).not.to.exist;
+          element.value = 'foo';
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+        });
 
-                test('correctly creates query on changing empty input to null', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = '';
-                    element._buildQuery();
-                    expect(element.query).not.to.exist;
-                    element.value = null;
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                });
+        test('correctly creates query on changing empty input to null', function() {
+          expect(element.query).not.to.exist;
+          element.value = '';
+          element._buildQuery();
+          expect(element.query).not.to.exist;
+          element.value = null;
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+        });
 
-                test('correctly changes query on changing null input to string', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = null;
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                    element.value = 'foo';
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
-                });
+        test('correctly changes query on changing null input to string', function() {
+          expect(element.query).not.to.exist;
+          element.value = null;
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+          element.value = 'foo';
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('foo').fields('my.field').toJSON());
+        });
 
-                test('correctly removes query on changing null input to empty', function() {
-                    expect(element.query).not.to.exist;
-                    element.value = null;
-                    element._buildQuery();
-                    expect(element.query).to.exist;
-                    expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
-                    element.value = '';
-                    element._buildQuery();
-                    expect(element.query).not.to.exist;
-                });
+        test('correctly removes query on changing null input to empty', function() {
+          expect(element.query).not.to.exist;
+          element.value = null;
+          element._buildQuery();
+          expect(element.query).to.exist;
+          expect(element.query.toJSON()).to.deep.equal(ejs.MatchAllQuery().toJSON());
+          element.value = '';
+          element._buildQuery();
+          expect(element.query).not.to.exist;
+        });
 
-                test('non-advanced search does escape + in value', function() {
-                    element.value = 'my+value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape + in value', function() {
+          element.value = 'my+value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape - in value', function() {
-                    element.value = 'my-value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape - in value', function() {
+          element.value = 'my-value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape = in value', function() {
-                    element.value = 'my=value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape = in value', function() {
+          element.value = 'my=value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape & in value', function() {
-                    element.value = 'my&value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape & in value', function() {
+          element.value = 'my&value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape | in value', function() {
-                    element.value = 'my|value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape | in value', function() {
+          element.value = 'my|value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape > in value', function() {
-                    element.value = 'my>value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape > in value', function() {
+          element.value = 'my>value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape < in value', function() {
-                    element.value = 'my<value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape < in value', function() {
+          element.value = 'my<value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape ! in value', function() {
-                    element.value = 'my!value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape ! in value', function() {
+          element.value = 'my!value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape ( and ) in value', function() {
-                    element.value = '(my value)';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape ( and ) in value', function() {
+          element.value = '(my value)';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape { and } in value', function() {
-                    element.value = '{my value}';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape { and } in value', function() {
+          element.value = '{my value}';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape [ and ] in value', function() {
-                    element.value = '[my value]';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape [ and ] in value', function() {
+          element.value = '[my value]';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape ^ in value', function() {
-                    element.value = 'my^value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape ^ in value', function() {
+          element.value = 'my^value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape " in value', function() {
-                    element.value = '"my value"';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape " in value', function() {
+          element.value = '"my value"';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape ~ in value', function() {
-                    element.value = 'my~value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape ~ in value', function() {
+          element.value = 'my~value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape * in value', function() {
-                    element.value = 'my*value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape * in value', function() {
+          element.value = 'my*value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape ? in value', function() {
-                    element.value = 'my?value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape ? in value', function() {
+          element.value = 'my?value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape \\ in value', function() {
-                    element.value = 'my\\value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape \\ in value', function() {
+          element.value = 'my\\value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape single / in value', function() {
-                    element.value = 'my/value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape single / in value', function() {
+          element.value = 'my/value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('non-advanced search does escape double / in value', function() {
-                    element.value = '/my value/';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
-                });
+        test('non-advanced search does escape double / in value', function() {
+          element.value = '/my value/';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape + in value', function() {
-                    element.advanced = true;
-                    element.value = 'my+value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my+value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape + in value', function() {
+          element.advanced = true;
+          element.value = 'my+value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my+value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape - in value', function() {
-                    element.advanced = true;
-                    element.value = 'my-value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my-value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape - in value', function() {
+          element.advanced = true;
+          element.value = 'my-value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my-value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape = in value', function() {
-                    element.advanced = true;
-                    element.value = 'my=value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my=value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape = in value', function() {
+          element.advanced = true;
+          element.value = 'my=value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my=value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape & in value', function() {
-                    element.advanced = true;
-                    element.value = 'my&value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my&value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape & in value', function() {
+          element.advanced = true;
+          element.value = 'my&value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my&value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape | in value', function() {
-                    element.advanced = true;
-                    element.value = 'my|value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my|value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape | in value', function() {
+          element.advanced = true;
+          element.value = 'my|value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my|value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape > in value', function() {
-                    element.advanced = true;
-                    element.value = 'my>value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my>value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape > in value', function() {
+          element.advanced = true;
+          element.value = 'my>value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my>value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape < in value', function() {
-                    element.advanced = true;
-                    element.value = 'my<value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my<value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape < in value', function() {
+          element.advanced = true;
+          element.value = 'my<value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my<value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape ! in value', function() {
-                    element.advanced = true;
-                    element.value = 'my!value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my!value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape ! in value', function() {
+          element.advanced = true;
+          element.value = 'my!value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my!value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape ( and ) in value', function() {
-                    element.advanced = true;
-                    element.value = '(my value)';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('(my value)').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape ( and ) in value', function() {
+          element.advanced = true;
+          element.value = '(my value)';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('(my value)').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape { and } in value', function() {
-                    element.advanced = true;
-                    element.value = '{my value}';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('{my value}').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape { and } in value', function() {
+          element.advanced = true;
+          element.value = '{my value}';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('{my value}').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape [ and ] in value', function() {
-                    element.advanced = true;
-                    element.value = '[my value]';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('[my value]').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape [ and ] in value', function() {
+          element.advanced = true;
+          element.value = '[my value]';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('[my value]').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape ^ in value', function() {
-                    element.advanced = true;
-                    element.value = 'my^value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my^value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape ^ in value', function() {
+          element.advanced = true;
+          element.value = 'my^value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my^value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape " in value', function() {
-                      element.advanced = true;
-                    element.value = '"my value"';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('"my value"').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape " in value', function() {
+            element.advanced = true;
+          element.value = '"my value"';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('"my value"').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape ~ in value', function() {
-                    element.advanced = true;
-                    element.value = 'my~value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my~value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape ~ in value', function() {
+          element.advanced = true;
+          element.value = 'my~value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my~value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape * in value', function() {
-                    element.advanced = true;
-                    element.value = 'my*value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my*value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape * in value', function() {
+          element.advanced = true;
+          element.value = 'my*value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my*value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape ? in value', function() {
-                    element.advanced = true;
-                    element.value = 'my?value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my?value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape ? in value', function() {
+          element.advanced = true;
+          element.value = 'my?value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my?value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape \\ in value', function() {
-                    element.advanced = true;
-                    element.value = 'my\\value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my\\value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape \\ in value', function() {
+          element.advanced = true;
+          element.value = 'my\\value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my\\value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape single / in value', function() {
-                    element.advanced = true;
-                    element.value = 'my/value';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my/value').fields('my.field').toJSON());
-                });
+        test('advanced search does not escape single / in value', function() {
+          element.advanced = true;
+          element.value = 'my/value';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('my/value').fields('my.field').toJSON());
+        });
 
-                test('advanced search does not escape double / in value', function() {
-                    element.advanced = true;
-                    element.value = '/my value/';
-                    element._buildQuery();
-                    expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('/my value/').fields('my.field').toJSON());
-                });
-            });
-        </script>
-    </body>
+        test('advanced search does not escape double / in value', function() {
+          element.advanced = true;
+          element.value = '/my value/';
+          element._buildQuery();
+          expect(element.query.toJSON()).to.deep.equal(ejs.QueryStringQuery('/my value/').fields('my.field').toJSON());
+        });
+      });
+    </script>
+  </body>
 </html>

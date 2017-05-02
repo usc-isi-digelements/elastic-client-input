@@ -15,57 +15,54 @@ limitations under the License.
 -->
 
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-        <title>elastic-client-input Demo</title>
-        <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-        <link rel="import" href="../elastic-client-input.html">
-        <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
-        <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
-    </head>
-    <body unresolved>
-        <template is="dom-bind" id="demo">
-        <paper-toolbar mode="waterfall">
-            <elastic-client-input class="flex"
-                label="Text Input"
-                field="foo.bar"
-                value="{{val}}"
-                query="{{ejsQuery}}"
-            ></elastic-client-input>            
-        </paper-toolbar>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>elastic-client-input Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="../elastic-client-input.html">
+    <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+    <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+  </head>
+  <body unresolved>
+    <template is="dom-bind" id="demo">
+    <paper-toolbar mode="waterfall">
+      <elastic-client-input class="flex"
+        label="Text Input"
+        field="foo.bar"
+        value="{{val}}"
+        query="{{ejsQuery}}">
+      </elastic-client-input>
+    </paper-toolbar>
 
-            <p><span>Input: </span>{{val}}</p>
-            <p><span>Query: </span>{{toJSON(ejsQuery)}}</p>
+      <p><span>Input: </span>{{val}}</p>
+      <p><span>Query: </span>{{toJSON(ejsQuery)}}</p>
 
+      <br><hr><br>
 
-            <br><hr><br>
+      <elastic-client-input
+        id="input2"
+        field="my.field"
+        value="{{val2}}"
+        query="{{ejsQuery2}}">
+      </elastic-client-input>
+      <button onclick="callBuild()">OK</button>
 
-            <elastic-client-input
-                id="input2"
-                field="my.field"
-                value="{{val2}}"
-                query="{{ejsQuery2}}"
-            ></elastic-client-input>
-            <button onclick="callBuild()">OK</button>
+      <p><span>Input: </span>{{val2}}</p>
+      <p><span>Query: </span>{{toJSON(ejsQuery2)}}</p>
+    </template>
+    <script>
+      (function(document) {
+        var demo = document.querySelector('#demo');
 
-            <p><span>Input: </span>{{val2}}</p>
-            <p><span>Query: </span>{{toJSON(ejsQuery2)}}</p>
-        </template>
+        demo.toJSON = function(ejs) {
+          return JSON.stringify(ejs);
+        };
+      })(document);
 
-        <script>
-            (function(document) {
-                var demo = document.querySelector('#demo');
-
-                demo.toJSON = function(ejs) {
-                    return JSON.stringify(ejs);
-                }
-            })(document);
-
-            function callBuild() {
-                document.getElementById('input2')._buildQuery();
-            }
-        </script>
-
-    </body>
+      function callBuild() {
+        document.getElementById('input2')._buildQuery();
+      }
+    </script>
+  </body>
 </html>
